@@ -5,13 +5,11 @@ function eautopay_install(){
   node_types_rebuild();
 
   foreach (_eautopay_fields_installed() as $field){
-    file_put_contents('/tmp/fields_installed.txt', $field.'<br>');
     field_create_field($field);
   }
 
   foreach (_eautopay_fields_instances() as $instance){
-//    $instance['entity_type'] = 'node';
-//    $instance['bandle'] = 'article';
+    dpm($instance);
     field_create_instance($instance);
   }
 }
@@ -34,17 +32,13 @@ function _eautopay_fields_instances (){
   $t = get_t();
   return array(
     'field_first_name' => array(
-      'field_name' => 'field_first_name',
-      'type' => 'text',
+      'field_name'  => 'field_first_name',
+      'label'       => $t('First name'),
+      'cardinality' => 1,
       'entity_type' => 'node',
-      'bundle' => 'article',
-      'label' => $t('First name'),
-      'widget' => array(
-        'type' => 'text_textfield',
-      ),
-      'display' => array(
-        'label' => $t('First name'),
-        'type' => 'text'
+      'bundle' => 'page',
+      'widget'      => array(
+        'type'       => 'text_textfield',
       ),
     ),
   );
@@ -53,11 +47,12 @@ function _eautopay_fields_instances (){
 function eautopay_uninstall(){
 
   foreach(array_keys(_eautopay_fields_installed()) as $field){
+    dpm($field);
     field_delete_field($field);
   }
 
   foreach(array_keys(_eautopay_fields_instances()) as $instance){
+    dpm($instance);
     field_delete_instance($instance);
   }
-  dpm($instances);
 }
