@@ -1,32 +1,63 @@
 <?php
 
-function eutopay_enable(){
+function eautopay_install(){
 
-//  if(!field_info_field('field_first_name')){
-    $field = array(
+  node_types_rebuild();
+
+  foreach (_eautopay_fields_installed() as $field){
+    file_put_contents('/tmp/fields_installed.txt', $field.'<br>');
+    field_create_field($field);
+  }
+
+  foreach (_eautopay_fields_instances() as $instance){
+//    $instance['entity_type'] = 'node';
+//    $instance['bandle'] = 'article';
+    field_create_instance($instance);
+  }
+}
+
+function _eautopay_fields_installed (){
+
+  $t = get_t();
+
+  return array(
+    'field_first_name' => array(
       'field_name' => 'field_first_name',
       'type' => 'text',
-      'cardinality' => 1,
-      'entity_types' => array('user'),
-    );
-    field_create_field($field);
-//  }
+      'label' => $t('First name')
+    ),
+  );
 
-  $field_inst=field_info_instances('user', 'user');
+}
 
-//  if(!isset($field_inst['field_first_name'])){
-
-    $instance = array(
+function _eautopay_fields_instances (){
+  $t = get_t();
+  return array(
+    'field_first_name' => array(
       'field_name' => 'field_first_name',
-      'entity_type' => 'user',
-      'bundle' => 'user',
-      'label' => t('Имя'),
-      'description' => t('Ваше имя'),
-      'weight' => 1,
+      'type' => 'text',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'label' => $t('First name'),
       'widget' => array(
-        'type' => 'textfield',
+        'type' => 'text_textfield',
       ),
-    );
-    field_create_instance($instance);
-//  }
+      'display' => array(
+        'label' => $t('First name'),
+        'type' => 'text'
+      ),
+    ),
+  );
+}
+
+function eautopay_uninstall(){
+
+  foreach(array_keys(_eautopay_fields_installed()) as $field){
+    field_delete_field($field);
+  }
+
+  foreach(array_keys(_eautopay_fields_instances()) as $instance){
+    field_delete_instance($instance);
+  }
+  dpm($instances);
 }
