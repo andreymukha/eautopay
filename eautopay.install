@@ -4,39 +4,188 @@ function eautopay_install(){
 
   node_types_rebuild();
 
-  foreach (_eautopay_fields_installed() as $field){
+  foreach (_eautopay_installed_fields() as $field){
     field_create_field($field);
   }
 
-  foreach (_eautopay_fields_instances() as $instance){
-    dpm($instance);
+  foreach (_eautopay_installed_instances() as $instance){
     field_create_instance($instance);
   }
 }
 
-function _eautopay_fields_installed (){
+function _eautopay_installed_fields(){
 
   $t = get_t();
 
   return array(
-    'field_first_name' => array(
-      'field_name' => 'field_first_name',
+    'field_epay_first_name' => array(
+      'field_name' => 'field_epay_first_name',
       'type' => 'text',
       'label' => $t('First name')
+    ),
+    'field_epay_last_name' => array(
+      'field_name' => 'field_epay_last_name',
+      'type' => 'text',
+      'label' => $t('Last name')
+    ),
+    'field_epay_middle_name' => array(
+      'field_name' => 'field_epay_middle_name',
+      'type' => 'text',
+      'label' => $t('Middle name')
+    ),
+    'field_epay_email' => array(
+      'field_name' => 'field_epay_email',
+      'type' => 'text',
+      'label' => $t('Email address')
+    ),
+    'field_epay_phone' => array(
+      'field_name' => 'field_epay_phone',
+      'type' => 'text',
+      'label' => $t('Phone number')
+    ),
+    'field_epay_phone2' => array(
+      'field_name' => 'field_epay_phone2',
+      'type' => 'text',
+      'label' => $t('Phone number 2')
+    ),
+    'field_epay_city' => array(
+      'field_name' => 'field_epay_city',
+      'type' => 'text',
+      'label' => $t('City')
+    ),
+    'field_epay_country' => array(
+      'field_name' => 'field_epay_country',
+      'type' => 'text',
+      'label' => $t('Country')
+    ),
+    'field_epay_address' => array(
+      'field_name' => 'field_epay_address',
+      'type' => 'text',
+      'label' => $t('Address')
+    ),
+    'field_epay_region' => array(
+      'field_name' => 'field_epay_region',
+      'type' => 'text',
+      'label' => $t('Region')
+    ),
+    'field_epay_postalcode' => array(
+      'field_name' => 'field_epay_postalcode',
+      'type' => 'text',
+      'label' => $t('Postal code')
     ),
   );
 
 }
 
-function _eautopay_fields_instances (){
+function _eautopay_installed_instances (){
   $t = get_t();
   return array(
-    'field_first_name' => array(
-      'field_name'  => 'field_first_name',
+    'field_epay_first_name' => array(
+      'field_name'  => 'field_epay_first_name',
       'label'       => $t('First name'),
       'cardinality' => 1,
-      'entity_type' => 'node',
-      'bundle' => 'page',
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_last_name' => array(
+      'field_name'  => 'field_epay_last_name',
+      'label'       => $t('Last name'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_middle_name' => array(
+      'field_name'  => 'field_epay_middle_name',
+      'label'       => $t('Middle name'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_email' => array(
+      'field_name'  => 'field_epay_email',
+      'label'       => $t('Email address'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_phone' => array(
+      'field_name'  => 'field_epay_phone',
+      'label'       => $t('Phone number'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_phone2' => array(
+      'field_name'  => 'field_epay_phone2',
+      'label'       => $t('Phone number 2'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_city' => array(
+      'field_name'  => 'field_epay_city',
+      'label'       => $t('City'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_country' => array(
+      'field_name'  => 'field_epay_country',
+      'label'       => $t('Country'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_address' => array(
+      'field_name'  => 'field_epay_address',
+      'label'       => $t('Address'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_region' => array(
+      'field_name'  => 'field_epay_region',
+      'label'       => $t('Region'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'widget'      => array(
+        'type'       => 'text_textfield',
+      ),
+    ),
+    'field_epay_postalcode' => array(
+      'field_name'  => 'field_epay_postalcode',
+      'label'       => $t('Postal code'),
+      'cardinality' => 1,
+      'entity_type' => 'user',
+      'bundle' => 'user',
       'widget'      => array(
         'type'       => 'text_textfield',
       ),
@@ -46,13 +195,16 @@ function _eautopay_fields_instances (){
 
 function eautopay_uninstall(){
 
-  foreach(array_keys(_eautopay_fields_installed()) as $field){
-    dpm($field);
+  foreach(array_keys(_eautopay_installed_fields()) as $field){
     field_delete_field($field);
   }
 
-  foreach(array_keys(_eautopay_fields_instances()) as $instance){
-    dpm($instance);
+  foreach(_eautopay_installed_instances() as $instance){
     field_delete_instance($instance);
   }
+
+
+
+  field_purge_batch(1000);
+
 }
