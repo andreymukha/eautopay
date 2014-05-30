@@ -21,7 +21,7 @@ function _eautopay_installed_fields(){
     'field_epay_first_name' => array(
       'field_name' => 'field_epay_first_name',
       'type' => 'text',
-      'label' => $t('First name')
+      'label' => $t('First name'),
     ),
     'field_epay_last_name' => array(
       'field_name' => 'field_epay_last_name',

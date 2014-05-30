@@ -11,15 +11,66 @@ function eautopay_menu (){
     'type' => MENU_NORMAL_ITEM,
   );
 
-  $items['user/eautopay'] = array(
+  $items['user/%user/eautopay'] = array(
     'title' => 'Поля профиля из E-autopay',
     'description' => 'Страница созданная модулем e-autopay для дополнительных данных заказа',
-    'page callback' => 'rrrrrrrr',
+    'page callback' => 'user_profile_eautopay_data',
+    'page arguments' => array(1),
     'access callback' => TRUE,
     'type' => MENU_LOCAL_TASK,
   );
 
   return $items;
+}
+
+function user_profile_eautopay_data ($account){
+  $e = field_info_field('field_epay_first_name');
+
+  dpm($e);
+//  $first_name = field_view_field('user', $account, 'field_epay_first_name', 'full');
+
+
+  $first_name = field_attach_view('user', $account, 'full');
+  return render($first_name);
+}
+
+function eautopay_form_user_profile_form_alter (&$form, &$form_state){
+
+  $form['eautopay'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Eautopay data'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+
+  $my_fields = _eautopay_installed_fields();
+
+//  print_r($my_fields);
+
+  $form['eautopay']['field_epay_first_name'] = $form['field_epay_first_name'];
+  $form['eautopay']['field_epay_last_name'] = $form['field_epay_last_name'];
+  $form['eautopay']['field_epay_middle_name'] = $form['field_epay_middle_name'];
+  $form['eautopay']['field_epay_email'] = $form['field_epay_email'];
+  $form['eautopay']['field_epay_phone'] = $form['field_epay_phone'];
+  $form['eautopay']['field_epay_phone2'] = $form['field_epay_phone2'];
+  $form['eautopay']['field_epay_city'] = $form['field_epay_city'];
+  $form['eautopay']['field_epay_country'] = $form['field_epay_country'];
+  $form['eautopay']['field_epay_address'] = $form['field_epay_address'];
+  $form['eautopay']['field_epay_region'] = $form['field_epay_region'];
+  $form['eautopay']['field_epay_postalcode'] = $form['field_epay_postalcode'];
+
+  unset($form['field_epay_first_name']);
+  unset($form['field_epay_last_name']);
+  unset($form['field_epay_middle_name']);
+  unset($form['field_epay_email']);
+  unset($form['field_epay_phone']);
+  unset($form['field_epay_phone2']);
+  unset($form['field_epay_city']);
+  unset($form['field_epay_country']);
+  unset($form['field_epay_address']);
+  unset($form['field_epay_region']);
+  unset($form['field_epay_postalcode']);
+
 }
 
 function eautopay_get_post () {
@@ -32,10 +83,6 @@ function eautopay_get_post () {
   $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
   dpm($result);
-  dpm(field_info_field('field_tags'));
-  return md5($result['id'].$result['email'].$result['phone'].'EEjFUjWNYamxAFLt7Ke7XKtgEw9WphN3sKX7dy');
-}
 
-function rrrrrrrr (){
-  return'rrrrrrrr';
+  return md5($result['id'].$result['email'].$result['phone'].'EEjFUjWNYamxAFLt7Ke7XKtgEw9WphN3sKX7dy');
 }
