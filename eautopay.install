@@ -1,0 +1,32 @@
+<?php
+
+function eutopay_enable(){
+
+//  if(!field_info_field('field_first_name')){
+    $field = array(
+      'field_name' => 'field_first_name',
+      'type' => 'text',
+      'cardinality' => 1,
+      'entity_types' => array('user'),
+    );
+    field_create_field($field);
+//  }
+
+  $field_inst=field_info_instances('user', 'user');
+
+//  if(!isset($field_inst['field_first_name'])){
+
+    $instance = array(
+      'field_name' => 'field_first_name',
+      'entity_type' => 'user',
+      'bundle' => 'user',
+      'label' => t('Имя'),
+      'description' => t('Ваше имя'),
+      'weight' => 1,
+      'widget' => array(
+        'type' => 'textfield',
+      ),
+    );
+    field_create_instance($instance);
+//  }
+}
