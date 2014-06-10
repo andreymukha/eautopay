@@ -1,10 +1,18 @@
 <?php
 
+require_once('eautopay.inc.php');
+
 function eautopay_menu (){
+
+  global $base_url;
+
+  $eautopay_get_link = substr(variable_get('eautopay_link'), drupal_strlen($base_url)+1);
+
+  dpm($eautopay_get_link);
 
   $items = array();
 
-  $items['eautopay'] = array(
+  $items[$eautopay_get_link] = array(
     'title' => 'POST data',
     'page callback' => 'eautopay_get_post',
     'access callback' => TRUE,
@@ -20,21 +28,41 @@ function eautopay_menu (){
     'type' => MENU_LOCAL_TASK,
   );
 
+  $items['admin/config/system/eautopay'] = array(
+    'title' => 'Настройки e-autopay',
+    'description' => 'позволяет здать адрес страницы, куда будут приходить уведомления',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('eautopay_get_pay_data_form'),
+    'access arguments' => array('administer site configuration'),
+    'file' => 'eautopay.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
   return $items;
 }
 
 function user_profile_eautopay_data ($account){
-  $e = field_info_field('field_epay_first_name');
 
-  dpm($e);
-//  $first_name = field_view_field('user', $account, 'field_epay_first_name', 'full');
+  $installed_fields = _eautopay_installed_fields();
 
+  foreach($installed_fields as $c_field_name => $c_field_info){
+    $fields[] = field_view_field('user', $account, $c_field_name, 'full');
+  }
 
-  $first_name = field_attach_view('user', $account, 'full');
-  return render($first_name);
+  return render($fields);
 }
 
-function eautopay_form_user_profile_form_alter (&$form, &$form_state){
+function eautopay_user_view_alter(&$build) {
+
+  $installed_fields = _eautopay_installed_fields();
+
+  foreach ($installed_fields as $c_field_name => $c_field_info) {
+    unset($build[$c_field_name]);
+  }
+
+}
+
+function eautopay_form_user_profile_form_alter (&$form){
 
   $form['eautopay'] = array(
     '#type' => 'fieldset',
@@ -43,33 +71,12 @@ function eautopay_form_user_profile_form_alter (&$form, &$form_state){
     '#collapsed' => FALSE,
   );
 
-  $my_fields = _eautopay_installed_fields();
+  $installed_fields = _eautopay_installed_fields();
 
-//  print_r($my_fields);
-
-  $form['eautopay']['field_epay_first_name'] = $form['field_epay_first_name'];
-  $form['eautopay']['field_epay_last_name'] = $form['field_epay_last_name'];
-  $form['eautopay']['field_epay_middle_name'] = $form['field_epay_middle_name'];
-  $form['eautopay']['field_epay_email'] = $form['field_epay_email'];
-  $form['eautopay']['field_epay_phone'] = $form['field_epay_phone'];
-  $form['eautopay']['field_epay_phone2'] = $form['field_epay_phone2'];
-  $form['eautopay']['field_epay_city'] = $form['field_epay_city'];
-  $form['eautopay']['field_epay_country'] = $form['field_epay_country'];
-  $form['eautopay']['field_epay_address'] = $form['field_epay_address'];
-  $form['eautopay']['field_epay_region'] = $form['field_epay_region'];
-  $form['eautopay']['field_epay_postalcode'] = $form['field_epay_postalcode'];
-
-  unset($form['field_epay_first_name']);
-  unset($form['field_epay_last_name']);
-  unset($form['field_epay_middle_name']);
-  unset($form['field_epay_email']);
-  unset($form['field_epay_phone']);
-  unset($form['field_epay_phone2']);
-  unset($form['field_epay_city']);
-  unset($form['field_epay_country']);
-  unset($form['field_epay_address']);
-  unset($form['field_epay_region']);
-  unset($form['field_epay_postalcode']);
+  foreach ($installed_fields as $c_field_name => $c_field_info) {
+    $form['eautopay'][$c_field_name] = $form[$c_field_name];
+    unset($form[$c_field_name]);
+  }
 
 }
 
@@ -78,7 +85,6 @@ function eautopay_get_post () {
   if($_POST){
     file_put_contents('/tmp/e-autopay.txt', serialize($_POST));
   }
-
 
   $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
