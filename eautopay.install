@@ -1,6 +1,6 @@
 <?php
 
-require_once('eautopay.inc.php');
+require_once('eautopay.inc');
 
 function eautopay_install(){
 
