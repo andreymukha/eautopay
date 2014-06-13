@@ -13,6 +13,12 @@ function eautopay_install(){
   foreach (_eautopay_installed_instances() as $instance){
     field_create_instance($instance);
   }
+
+  if(!user_role_load_by_name('e-autopay user')){
+    $role = new stdClass();
+    $role->name = 'e-autopay user';
+    user_role_save($role);
+  }
 }
 
 function _eautopay_installed_instances (){
@@ -142,6 +148,9 @@ function eautopay_uninstall(){
   }
 
   variable_del('eautopay_link');
+  variable_del('eautopay_secret_key');
+
+  user_role_delete('e-autopay user');
 
   field_purge_batch(1000);
 

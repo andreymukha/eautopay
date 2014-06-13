@@ -4,9 +4,13 @@ function eautopay_get_pay_data_form (){
 
   global $base_url;
 
+  if(!variable_get('eautopay_link')){
+    drupal_set_message('У вас не сохранена страница', 'error');
+  }
+
   $form['eautopay_post_link'] = array(
     '#title' => t('Ссылка на страницу, которая будет принимать POST данные'),
-    '#description' => t('Ссылка вставляется в e-autopay  в уведомлениях'),
+    '#description' => t('Ссылка вставляется в e-autopay - в уведомлениях'),
     '#type' => 'textfield',
     '#size' => 60,
     '#maxlength' => 128,
@@ -51,4 +55,6 @@ function eautopay_get_pay_data_form_submit (&$form, &$form_state){
   variable_set('eautopay_secret_key', check_plain(filter_xss($form_state['values']['eautopay_secret_key'], array())));
   drupal_set_message('Ссылка '.l(variable_get('eautopay_link'), variable_get('eautopay_link'), array('attributes' => array('target' => '_blank'))).' успешна сохранена');
   drupal_set_message('Секретный ключ <b>'.variable_get('eautopay_secret_key').'</b> успешна сохранён');
+
+  //todo попробовать сбросить кэш на странице
 }

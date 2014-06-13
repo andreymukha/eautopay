@@ -1,6 +1,7 @@
 <?php
 
 require_once('eautopay.inc');
+//require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
 
 function eautopay_menu (){
 
@@ -10,12 +11,14 @@ function eautopay_menu (){
 
   $items = array();
 
-  $items[$eautopay_get_link] = array(
-    'title' => 'POST data',
-    'page callback' => 'eautopay_get_post',
-    'access callback' => TRUE,
-    'type' => MENU_NORMAL_ITEM,
-  );
+  if(variable_get('eautopay_link')){
+    $items[$eautopay_get_link] = array(
+      'title' => 'POST data',
+      'page callback' => 'eautopay_get_post',
+      'access callback' => TRUE,
+      'type' => MENU_NORMAL_ITEM,
+    );
+  }
 
   $items['user/%user/eautopay'] = array(
     'title' => 'Поля профиля из E-autopay',
@@ -80,12 +83,17 @@ function eautopay_form_user_profile_form_alter (&$form){
 
 function eautopay_get_post () {
 
+  drupal_page_is_cacheable(FALSE);
+
 //  if(md5($_POST['id'].$_POST['email'].$_POST['phone'].variable_get('eautopay_secret_key')) == $_POST['hash']){
 //    debug('YES!');
 //  }
 
   if($_POST){
     file_put_contents('/tmp/e-autopay.txt', serialize($_POST));
+
+    $epay_role = user_role_load_by_name('e-autopay user');
+    $epay_role_rid = $epay_role->rid;
 
     $new_eautopay_user = new stdClass();
     $new_eautopay_user->name = check_plain(filter_xss($_POST['first_name'])).' '.check_plain(filter_xss($_POST['last_name']));
@@ -94,9 +102,9 @@ function eautopay_get_post () {
     $new_eautopay_user->init = check_plain(filter_xss($_POST['email']));
     $new_eautopay_user->status = 1;
     $new_eautopay_user->signature_format = 'filtered_html';
-    $new_eautopay_user->role = array(
+    $new_eautopay_user->roles = array(
       DRUPAL_AUTHENTICATED_RID => TRUE,
-      'administrator' => TRUE,
+      $epay_role_rid => TRUE,
     );
     $new_eautopay_user->field_epay_first_name[LANGUAGE_NONE][0]['value'] = check_plain(filter_xss($_POST['first_name']));
     $new_eautopay_user->field_epay_last_name[LANGUAGE_NONE][0]['value'] = check_plain(filter_xss($_POST['last_name']));
@@ -110,7 +118,7 @@ function eautopay_get_post () {
     $new_eautopay_user->field_epay_region[LANGUAGE_NONE][0]['value'] = check_plain(filter_xss($_POST['region']));
     $new_eautopay_user->field_epay_postalcode[LANGUAGE_NONE][0]['value'] = check_plain(filter_xss($_POST['postalcode']));
 
-    if($epay_account = user_load_by_mail($new_eautopay_user->mail)){
+    if($epay_account = user_load_by_mail($new_eautopay_user->mail) or $epay_account = user_load_by_name($new_eautopay_user->name)){
       $epay_account->field_epay_first_name[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->field_epay_first_name[LANGUAGE_NONE][0]['value'];
       $epay_account->field_epay_last_name[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->field_epay_last_name[LANGUAGE_NONE][0]['value'];
       $epay_account->field_epay_middle_name[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->field_epay_middle_name[LANGUAGE_NONE][0]['value'];
@@ -122,16 +130,14 @@ function eautopay_get_post () {
       $epay_account->field_epay_address[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->field_epay_address[LANGUAGE_NONE][0]['value'];
       $epay_account->field_epay_region[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->field_epay_region[LANGUAGE_NONE][0]['value'];
       $epay_account->field_epay_postalcode[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->field_epay_postalcode[LANGUAGE_NONE][0]['value'];
+      $epay_account->roles = $new_eautopay_user->roles;
 
       user_save($epay_account);
-    }elseif(!$account = user_save($new_eautopay_user)){
-      watchdog('epay', $new_eautopay_user, WATCHDOG_DEBUG);
+    }else{
+      $account = user_save($new_eautopay_user);
     }
 
   }
-//  else{
-//    watchdog('epay', $_POST, WATCHDOG_EMERGENCY);
-//  }
 
   $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
