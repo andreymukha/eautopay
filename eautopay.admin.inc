@@ -5,7 +5,7 @@ function eautopay_get_pay_data_form (){
   global $base_url;
 
   if(!variable_get('eautopay_link')){
-    drupal_set_message('У вас не сохранена страница', 'error');
+    drupal_set_message('Внимание! Если вы не сохраняли данные из полей, то сделайте это.', 'warning');
   }
 
   $form['eautopay_post_link'] = array(
