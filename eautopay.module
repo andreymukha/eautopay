@@ -148,7 +148,7 @@ function eautopay_get_post () {
     }else{
       $account = user_save($new_eautopay_user);
     }
-
+    watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
 
   $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
