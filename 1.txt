@@ -8,13 +8,13 @@
 
 $ch = curl_init();
 
-//в $data можно сунуть что угодно, вплодь до файлов
+
 $data = array(
   'id' => '3245',
-  'first_name' => 'Иван',
-  'last_name' => 'Петров',
-  'middle_name' => 'Сидорович',
-  'email' => 'ivan@test.com',
+  'first_name' => 'Андрей1',
+  'last_name' => 'Муха',
+  'middle_name' => 'Витальевич',
+  'email' => 'admin@easyflash.org',
   'phone' => '79011580000',
   'phone2' => '',
   'city' => 'Москва',
@@ -23,7 +23,7 @@ $data = array(
   'region' => 'Москва',
   'postalcode' => '142793',
   'order_date' => '1357733101',
-  'pay_date' => '',
+  'pay_date' => '10.02.1085',
   'currency' => 'USD',
   'product_id' => '1',
   'product_name' => 'Услуга',
@@ -36,30 +36,31 @@ $data = array(
   'promoaction' => array(
     'promoaction_id' => '6987',
     'promoaction_name' => 'скидка для товара id 23',
-    'promocode' => 'PF6KrEi9hF'
+    'promocode' => 'PF6KrEi9hF',
   ),
   'partners' => array(
     0 => array(
       'login' => 'partner_login',
-      'commission' => '23.00 eur'
+      'commission' => '23.00 eur',
     ),
   ),
   'additional_field_1' => 'доп. поле 1',
   'additional_field_2' => 'доп. поле 2',
-  'additional_field_3' => '',
-  'additional_field_4' => '',
-  'additional_field_5' => '',
-  'additional_field_6' => '',
-  'additional_field_7' => '',
-  'additional_field_8' => '',
-  'additional_field_9' => '',
-  'additional_field_10' => '',
+  'additional_field_3' => '3132',
+  'additional_field_4' => '434324',
+  'additional_field_5' => '3434',
+  'additional_field_6' => '3434',
+  'additional_field_7' => '234324',
+  'additional_field_8' => '234234',
+  'additional_field_9' => '234',
+  'additional_field_10' => '234234',
   'hash' => '6288cbcdc1ccc1bb2726fbea3f88ca48'
 );
 
 //Вместо этого адреса пишем нужный
-curl_setopt($ch, CURLOPT_URL, 'http://test.dev/eautopay');
+curl_setopt($ch, CURLOPT_URL, 'http://test.dev/eautopay/CvjDDQ');
 curl_setopt($ch, CURLOPT_POST, 1);
+curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: multipart/form-data"));
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 
 $res = curl_exec($ch);
