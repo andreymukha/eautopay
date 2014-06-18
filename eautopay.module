@@ -137,16 +137,15 @@ function eautopay_get_post () {
     if($epay_account = user_load_by_mail($new_eautopay_user->mail) or $epay_account = user_load_by_name($new_eautopay_user->name)){
 
       $installed_fields = _eautopay_installed_fields();
-
       foreach ($installed_fields as $c_field_name => $c_field_info) {
         $epay_account->{$c_field_name}[LANGUAGE_NONE][0]['value'] = $new_eautopay_user->{$c_field_name}[LANGUAGE_NONE][0]['value'];
       }
-
       $epay_account->roles = $new_eautopay_user->roles;
-
       $account = user_save($epay_account);
+
     }else{
       $account = user_save($new_eautopay_user);
+      _user_mail_notify('register_no_approval_required', $new_eautopay_user);
     }
     watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
@@ -154,6 +153,8 @@ function eautopay_get_post () {
   $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
   debug($result);
+
+  //todo Выслать письмо с данными для доступа новому юзеру
 
   return md5($result['id'].$result['email'].$result['phone'].'EEjFUjWNYamxAFLt7Ke7XKtgEw9WphN3sKX7dy');
 }
