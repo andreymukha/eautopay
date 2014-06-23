@@ -154,7 +154,5 @@ function eautopay_get_post () {
 
   debug($result);
 
-  //todo Выслать письмо с данными для доступа новому юзеру
-
   return md5($result['id'].$result['email'].$result['phone'].'EEjFUjWNYamxAFLt7Ke7XKtgEw9WphN3sKX7dy');
 }
