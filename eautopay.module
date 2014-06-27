@@ -140,8 +140,51 @@ function eautopay_get_order() {
       $account = user_save($new_eautopay_user);
       _user_mail_notify('register_no_approval_required', $new_eautopay_user);
     }
+
+    $order = array(
+      'oid' => $epay_data['id'],
+      'uid' => $account->uid,
+      'order_date' => $epay_data['order_date'],
+      'pay_date' => $epay_data['pay_date'],
+      'currency' => $epay_data['currency'],
+      'product_id' => $epay_data['product_id'],
+      'product_name' => $epay_data['product_name'],
+      'product_price' => $epay_data['product_price'],
+      'product_qty' => $epay_data['product_qty'],
+      'comments_client' => $epay_data['comments_client'],
+      'comments_author' => $epay_data['comments_author'],
+      'ip' => $epay_data['ip'],
+      'pay_method' => $epay_data['pay_method'],
+    );
+
+    //todo Переделать проверку существования заказа
+
+//    $is_exist_oid = (int)db_select('epay_orders', 'eo')
+//      ->addExpression('count(*)', 'total')
+//      ->condition('oid', $epay_data['id'])
+//      ->execute()
+//      ->fetchField();
+
+    $query = db_select('epay_orders', 'eo')->condition('oid', $epay_data['id'])->fields('eo', array('oid'));
+    $r = $query->execute();
+
+    foreach ($r as $row) {
+      $oid = $row->oid;
+    }
+
+    if (isset($oid)){
+      exit;
+    }else{
+      drupal_write_record('epay_orders', $order);
+    }
+
     watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
+
+
+
+
+
 
   $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
