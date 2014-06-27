@@ -161,7 +161,7 @@ function eautopay_schema () {
       'pay_date' => array(
         'description' => 'Pay date',
         'type' => 'int',
-        'not null' => TRUE,
+        'not null' => FALSE,
       ),
       'currency' => array(
         'description' => 'Currency',
