@@ -87,28 +87,6 @@ function eautopay_form_user_profile_form_alter(&$form) {
 
 }
 
-function eautopay_get_post($post) {
-  $post_data = array(
-    'first_name' => $post['first_name'],
-    'last_name' => $post['last_name'],
-    'middle_name' => $post['middle_name'],
-    'email' => $post['email'],
-    'phone' => $post['phone'],
-    'phone2' => $post['phone2'],
-    'city' => $post['city'],
-    'country' => $post['country'],
-    'address' => $post['address'],
-    'region' => $post['region'],
-    'postalcode' => $post['postalcode'],
-  );
-
-  foreach ($post_data as $k => $v) {
-    $new_data[$k] = check_plain(filter_xss($v));
-  }
-
-  return $new_data;
-}
-
 function eautopay_get_order() {
 
   drupal_page_is_cacheable(FALSE);
@@ -116,9 +94,11 @@ function eautopay_get_order() {
 //  if(md5($_POST['id'].$_POST['email'].$_POST['phone'].variable_get('eautopay_secret_key')) == $_POST['hash']){
   if ($_POST) {
 
-    $epay_data = eautopay_get_post($_POST);
+    foreach ($_POST as $k=>$v){
+      $epay_data[$k] = check_plain(filter_xss($v));
+    }
 
-    file_put_contents('Z:\userdata\temp\e-autopay.txt', serialize($_POST));
+    file_put_contents('/tmp/e-autopay.txt', serialize($epay_data));
 
     $epay_role = user_role_load_by_name('e-autopay user');
 
@@ -163,7 +143,7 @@ function eautopay_get_order() {
     watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
 
-  $result = unserialize(file_get_contents('Z:\userdata\temp\e-autopay.txt'));
+  $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
   debug($result);
 
