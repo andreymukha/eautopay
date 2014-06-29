@@ -148,7 +148,7 @@ function eautopay_schema () {
         'not null' => TRUE,
       ),
       'uid' => array(
-        'description' => 'User ID, who make the order',
+        'description' => 'drupal users.uid',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE,
