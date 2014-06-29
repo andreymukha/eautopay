@@ -3,6 +3,8 @@
 require_once('eautopay.inc');
 //require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
 
+//todo Добавить хелп к модулю
+
 function eautopay_menu() {
 
   global $base_url;
@@ -94,6 +96,8 @@ function eautopay_get_order() {
 //  if(md5($_POST['id'].$_POST['email'].$_POST['phone'].variable_get('eautopay_secret_key')) == $_POST['hash']){
   if ($_POST) {
 
+    $epay_data = array();
+
     foreach ($_POST as $k => $v) {
       $epay_data[$k] = check_plain(filter_xss($v));
     }
@@ -139,6 +143,7 @@ function eautopay_get_order() {
     else {
       $account = user_save($new_eautopay_user);
       _user_mail_notify('register_no_approval_required', $new_eautopay_user);
+      //todo создать свой _user_mail_notify
     }
 
     $order = array(
