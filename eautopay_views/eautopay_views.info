@@ -1,0 +1,7 @@
+name = Eautopay Views
+description = Позволяет модулю Views выводить данные о заказах
+dependencies[] = views
+dependencies[] = eautopay
+core = 7.x
+version = 7.x-1.x-dev
+package = e-autopay
