@@ -102,7 +102,7 @@ function eautopay_get_order() {
       $epay_data[$k] = check_plain(filter_xss($v));
     }
 
-    file_put_contents('z:\userdata\temp\e-autopay.txt', serialize($epay_data));
+    file_put_contents('/tmp/e-autopay.txt', serialize($epay_data));
 
     $epay_role = user_role_load_by_name('e-autopay user');
 
@@ -178,9 +178,15 @@ function eautopay_get_order() {
     watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
 
-  $result = unserialize(file_get_contents('z:\userdata\temp\e-autopay.txt'));
+  $result = unserialize(file_get_contents('/tmp/e-autopay.txt'));
 
   debug($result);
 
   return md5($result['id'] . $result['email'] . $result['phone'] . 'EEjFUjWNYamxAFLt7Ke7XKtgEw9WphN3sKX7dy');
+}
+
+function eautopay_user_delete ($account) {
+  db_delete('epay_orders')
+    ->condition('uid', $account->uid)
+    ->execute();
 }
