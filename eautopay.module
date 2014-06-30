@@ -142,7 +142,7 @@ function eautopay_get_order() {
     }
     else {
       $account = user_save($new_eautopay_user);
-      _user_mail_notify('register_no_approval_required', $new_eautopay_user);
+      _user_mail_notify('register_admin_created', $new_eautopay_user);
       //todo создать свой _user_mail_notify
     }
 
