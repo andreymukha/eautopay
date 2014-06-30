@@ -9,13 +9,6 @@ function eautopay_views_data() {
     'title'    => t('E-Autopay orders'),
   );
 
-//  $data['epay_orders']['table']['join'] = array(
-//    'users' => array(
-//      'left_field' => 'uid',
-//      'field' => 'uid',
-//    ),
-//  );
-
   $data['epay_orders']['uid'] = array(
     'title' => t('Get E-Autopay orders'),
     'help' => t('You can configure orders from e-autopay.com'),
@@ -28,14 +21,6 @@ function eautopay_views_data() {
       'help'  => t('This relationship give you ability to add any field from node entity.'),
     ),
   );
-
-//  $data['epay_orders']['uid'] = array(
-//    'title' => t('User ID'),
-//    'help' => t('Just a plain text field.'),
-//    'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
-//    'filter'   => array('handler' => 'views_handler_filter_numeric'),
-//    'sort'     => array('handler' => 'views_handler_sort'),
-//  );
 
   $data['epay_orders']['oid'] = array(
     'title' => t('Order ID'),
