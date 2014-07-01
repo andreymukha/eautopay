@@ -9,8 +9,8 @@ function eautopay_get_pay_data_form (){
   }
 
   $form['eautopay_post_link'] = array(
-    '#title' => t('Ссылка на страницу, которая будет принимать POST данные'),
-    '#description' => t('Ссылка вставляется в e-autopay - в уведомлениях'),
+    '#title' => t('Ссылка, принимающая данные заказа из e-autopay'),
+    '#description' => t('Данная ссылка вставляется в настройках одиночного товара, в уведомлениях'),
     '#type' => 'textfield',
     '#size' => 60,
     '#maxlength' => 128,

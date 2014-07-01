@@ -1,5 +1,12 @@
 <?php
 
+function eautopay_views_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'eautopay_views'),
+  );
+}
+
 function eautopay_views_data() {
 
   $data['epay_orders']['table']['group'] = t('E-autopay orders');
@@ -10,21 +17,21 @@ function eautopay_views_data() {
   );
 
   $data['epay_orders']['uid'] = array(
-    'title' => t('Get E-Autopay orders'),
+    'title' => t('Relationship with e-autopay user'),
     'help' => t('You can configure orders from e-autopay.com'),
     'relationship' => array(
       'base' => 'users',
       'base field' => 'uid',
       'handler' => 'views_handler_relationship',
-      'label' => t('Label for user UID'),
+      'label' => t('User ID'),
       'title' => t('Relationship with user'),
-      'help'  => t('This relationship give you ability to add any field from node entity.'),
+      'help'  => t('This relationship give you ability to add any field from e-autopay users.'),
     ),
   );
 
   $data['epay_orders']['oid'] = array(
     'title' => t('Order ID'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Order id field.'),
     'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
     'filter'   => array('handler' => 'views_handler_filter_numeric'),
     'sort'     => array('handler' => 'views_handler_sort'),
@@ -32,7 +39,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['order_date'] = array(
     'title' => t('Order date'),
-    'help' => t('Just a timestamp field.'),
+    'help' => t('Order date field.'),
     'field' => array('handler' => 'views_handler_field_date', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort_date'),
     'filter' => array('handler' => 'views_handler_filter_date'),
@@ -40,7 +47,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['pay_date'] = array(
     'title' => t('Pay date'),
-    'help' => t('Just a timestamp field.'),
+    'help' => t('Pay date field.'),
     'field' => array('handler' => 'views_handler_field_date', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort_date'),
     'filter' => array('handler' => 'views_handler_filter_date'),
@@ -48,7 +55,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['currency'] = array(
     'title' => t('Currency'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Currency field.'),
     'field' => array('handler' => 'views_handler_field', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort'),
     'filter' => array('handler' => 'views_handler_filter_string'),
@@ -57,7 +64,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['product_id'] = array(
     'title' => t('Product ID'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Product ID field.'),
     'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
     'filter'   => array('handler' => 'views_handler_filter_numeric'),
     'sort'     => array('handler' => 'views_handler_sort'),
@@ -65,7 +72,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['product_name'] = array(
     'title' => t('Product name'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Product name field.'),
     'field' => array('handler' => 'views_handler_field', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort'),
     'filter' => array('handler' => 'views_handler_filter_string'),
@@ -74,15 +81,15 @@ function eautopay_views_data() {
 
   $data['epay_orders']['product_price'] = array(
     'title' => t('Product price'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Product price field.'),
     'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
     'filter'   => array('handler' => 'views_handler_filter_numeric'),
     'sort'     => array('handler' => 'views_handler_sort'),
   );
 
   $data['epay_orders']['product_qty'] = array(
-    'title' => t('product quantity'),
-    'help' => t('Just a plain text field.'),
+    'title' => t('Product quantity'),
+    'help' => t('Quantity of product.'),
     'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
     'filter'   => array('handler' => 'views_handler_filter_numeric'),
     'sort'     => array('handler' => 'views_handler_sort'),
@@ -90,7 +97,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['comments_client'] = array(
     'title' => t('Client comments'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Client comments field.'),
     'field' => array('handler' => 'views_handler_field', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort'),
     'filter' => array('handler' => 'views_handler_filter_string'),
@@ -99,7 +106,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['comments_author'] = array(
     'title' => t('Author comments'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Author comments field.'),
     'field' => array('handler' => 'views_handler_field', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort'),
     'filter' => array('handler' => 'views_handler_filter_string'),
@@ -108,7 +115,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['ip'] = array(
     'title' => t('IP'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('IP address of the client.'),
     'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
     'filter'   => array('handler' => 'views_handler_filter_numeric'),
     'sort'     => array('handler' => 'views_handler_sort'),
@@ -116,7 +123,7 @@ function eautopay_views_data() {
 
   $data['epay_orders']['pay_method'] = array(
     'title' => t('Pay method'),
-    'help' => t('Just a plain text field.'),
+    'help' => t('Pay method field.'),
     'field' => array('handler' => 'views_handler_field', 'click sortable' => TRUE),
     'sort' => array('handler' => 'views_handler_sort'),
     'filter' => array('handler' => 'views_handler_filter_string'),

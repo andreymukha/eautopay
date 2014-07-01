@@ -3,7 +3,18 @@
 require_once('eautopay.inc');
 //require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
 
-//todo Добавить хелп к модулю
+function eautopay_help($path, $arg) {
+  switch ($path){
+    case "admin/help#eautopay": return '<p>'. t("Модуль принимает данные о заказе с сервиса e-autopay.com,
+    на основе этих данных создаётся пользователь и записывается в базу данных его заказ. Для того, что бы можно было просмотреть
+    заказы, необходимо включить модуль <strong>E-autopay views</strong><br>
+    Внимание! На данный момент сервис присылает уведомления только при подтверждённом заказе, то есть, когда достоверно известно,
+    что деньги получены от покупателя!") .'</p>'; break;
+    case "admin/config/system/eautopay" : return '<p>'.t('На этой странице необходимо указать адрес страницы, куда будут приходить уведомления
+     и секретный ключ. При первом заходе на страницу адрес страницы и ключ генерируются автоматически, но, при желании,
+     вы можете изменить эти значения. После сохранения данные будут браться из базы данных и отображаться в полях формы.').'</p>'; break;
+  }
+}
 
 function eautopay_menu() {
 
@@ -15,7 +26,8 @@ function eautopay_menu() {
 
   if (variable_get('eautopay_link')) {
     $items[$eautopay_get_link] = array(
-      'title' => 'POST data',
+      'title' => 'Данные из e-autopay',
+      'description' => 'Страница, куда приходят данные заказа из e-autopay',
       'page callback' => 'eautopay_get_order',
       'access callback' => TRUE,
       'type' => MENU_NORMAL_ITEM,
@@ -23,8 +35,8 @@ function eautopay_menu() {
   }
 
   $items['user/%user/eautopay'] = array(
-    'title' => 'Поля профиля из E-autopay',
-    'description' => 'Страница созданная модулем e-autopay для дополнительных данных заказа',
+    'title' => 'Данные профился из e-autopay',
+    'description' => 'На этой вкладке отображаются данные, которые ввёл пользователь при оформлении заказа через сервис e-autopay',
     'page callback' => 'user_profile_eautopay_data',
     'page arguments' => array(1),
     'access callback' => TRUE,
@@ -32,8 +44,8 @@ function eautopay_menu() {
   );
 
   $items['admin/config/system/eautopay'] = array(
-    'title' => 'Настройки e-autopay',
-    'description' => 'позволяет здать адрес страницы, куда будут приходить уведомления',
+    'title' => 'Настройка e-autopay',
+    'description' => 'Настранице настроек задаётся секретный ключ и ссылка приёма данных с сервиса',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('eautopay_get_pay_data_form'),
     'access arguments' => array('administer site configuration'),
@@ -75,7 +87,7 @@ function eautopay_form_user_profile_form_alter(&$form) {
 
   $form['eautopay'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Eautopay data'),
+    '#title' => t('Данные профился из e-autopay'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
@@ -92,6 +104,8 @@ function eautopay_form_user_profile_form_alter(&$form) {
 function eautopay_get_order() {
 
   drupal_page_is_cacheable(FALSE);
+
+  debug(drupal_get_path('module', 'eautopay_views'));
 
 //  if(md5($_POST['id'].$_POST['email'].$_POST['phone'].variable_get('eautopay_secret_key')) == $_POST['hash']){
   if ($_POST) {

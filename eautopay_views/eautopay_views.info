@@ -1,4 +1,4 @@
-name = Eautopay Views
+name = E-autopay Views
 description = Позволяет модулю Views выводить данные о заказах
 dependencies[] = views
 dependencies[] = eautopay
