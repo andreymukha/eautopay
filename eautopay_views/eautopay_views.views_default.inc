@@ -3,7 +3,6 @@
 
 function eautopay_views_views_default_views() {
   $views = array();
-
   $view = new view();
   $view->name = 'e_autopay_orders_in_user_profile';
   $view->description = '';
@@ -128,7 +127,7 @@ function eautopay_views_views_default_views() {
     t('Страница'),
   );
 
-  $views['e_autopay_orders_in_user_profile'] = $view;
+  $views[$view->name] = $view;
 
   return $views;
 }
