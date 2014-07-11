@@ -39,18 +39,66 @@ function eautopay_views_views_default_views() {
   $handler->display->display_options['style_plugin'] = 'table';
   $handler->display->display_options['style_options']['columns'] = array(
     'oid' => 'oid',
+    'product_name' => 'product_name',
+    'product_qty' => 'product_qty',
+    'product_price' => 'product_price',
+    'currency' => 'currency',
+    'order_date' => 'order_date',
+    'pay_method' => 'pay_method',
   );
-  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['default'] = 'oid';
   $handler->display->display_options['style_options']['info'] = array(
     'oid' => array(
-      'sortable' => 0,
+      'sortable' => 1,
+      'default_sort_order' => 'desc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'product_name' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'product_qty' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'product_price' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'currency' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'order_date' => array(
+      'sortable' => 1,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'pay_method' => array(
+      'sortable' => 1,
       'default_sort_order' => 'asc',
       'align' => '',
       'separator' => '',
       'empty_column' => 0,
     ),
   );
-  /* Связь: E-autopay orders: Relationship with user */
+  /* Relationship: E-autopay orders: Relationship with user */
   $handler->display->display_options['relationships']['uid']['id'] = 'uid';
   $handler->display->display_options['relationships']['uid']['table'] = 'epay_orders';
   $handler->display->display_options['relationships']['uid']['field'] = 'uid';
@@ -112,7 +160,7 @@ function eautopay_views_views_default_views() {
   $handler->display->display_options['fields']['pay_method']['id'] = 'pay_method';
   $handler->display->display_options['fields']['pay_method']['table'] = 'epay_orders';
   $handler->display->display_options['fields']['pay_method']['field'] = 'pay_method';
-  /* Контекстный фильтр: Пользователь: Uid */
+  /* Contextual filter: Пользователь: Uid */
   $handler->display->display_options['arguments']['uid']['id'] = 'uid';
   $handler->display->display_options['arguments']['uid']['table'] = 'users';
   $handler->display->display_options['arguments']['uid']['field'] = 'uid';
@@ -269,6 +317,7 @@ function eautopay_views_views_default_views() {
     t('Pay method'),
     t('Все'),
     t('Orders in user profile'),
+    t('more'),
     t('All orders'),
   );
 
