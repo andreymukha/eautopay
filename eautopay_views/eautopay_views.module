@@ -116,9 +116,10 @@ function eautopay_views_data() {
   $data['epay_orders']['ip'] = array(
     'title' => t('IP'),
     'help' => t('IP address of the client.'),
-    'field'    => array('handler' => 'views_handler_field_numeric', 'click sortable' => TRUE),
-    'filter'   => array('handler' => 'views_handler_filter_numeric'),
-    'sort'     => array('handler' => 'views_handler_sort'),
+    'field' => array('handler' => 'views_handler_field', 'click sortable' => TRUE),
+    'sort' => array('handler' => 'views_handler_sort'),
+    'filter' => array('handler' => 'views_handler_filter_string'),
+    'argument' => array('handler' => 'views_handler_argument_string'),
   );
 
   $data['epay_orders']['pay_method'] = array(
