@@ -51,6 +51,13 @@ function eautopay_menu() {
     'access arguments' => array('administer site configuration'),
     'file' => 'eautopay.admin.inc',
     'type' => MENU_NORMAL_ITEM,
+    'weight' => -10,
+  );
+
+  $items['admin/config/system/eautopay/settings'] = array(
+    'title' => 'Настройка e-autopay',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
   );
 
   return $items;
