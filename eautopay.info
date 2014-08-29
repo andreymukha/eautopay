@@ -1,6 +1,6 @@
 name = E-autopay
-description = module for e-autopay
+description = Модуль для взаимодействия с сервисом e-autopay.com через уведомления
 core = 7.x
 version = 7.x-1.x-dev
-package = Other
+package = e-autopay
 configure = admin/config/system/eautopay

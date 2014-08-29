@@ -1,28 +1,41 @@
 <?php
 
 require_once('eautopay.inc');
-//require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
 
-function eautopay_menu (){
+function eautopay_help($path, $arg) {
+  switch ($path){
+    case "admin/help#eautopay": return '<p>'. t("Модуль принимает данные о заказе с сервиса e-autopay.com,
+    на основе этих данных создаётся пользователь и записывается в базу данных его заказ. Для того, что бы можно было просмотреть
+    заказы, необходимо включить модуль <strong>E-autopay views</strong><br>
+    Внимание! На данный момент сервис присылает уведомления только при подтверждённом заказе, то есть, когда достоверно известно,
+    что деньги получены от покупателя!") .'</p>'; break;
+    case "admin/config/system/eautopay" : return '<p>'.t('На этой странице необходимо указать адрес страницы, куда будут приходить уведомления
+     и секретный ключ. При первом заходе на страницу адрес страницы и ключ генерируются автоматически, но, при желании,
+     вы можете изменить эти значения. После сохранения данные будут браться из базы данных и отображаться в полях формы.').'</p>'; break;
+  }
+}
+
+function eautopay_menu() {
 
   global $base_url;
 
-  $eautopay_get_link = substr(variable_get('eautopay_link'), drupal_strlen($base_url)+1);
+  $eautopay_get_link = substr(variable_get('eautopay_link'), drupal_strlen($base_url) + 1);
 
   $items = array();
 
-  if(variable_get('eautopay_link')){
+  if (variable_get('eautopay_link')) {
     $items[$eautopay_get_link] = array(
-      'title' => 'POST data',
-      'page callback' => 'eautopay_get_post',
+      'title' => 'Данные из e-autopay',
+      'description' => 'Страница, куда приходят данные заказа из e-autopay',
+      'page callback' => 'eautopay_get_order',
       'access callback' => TRUE,
-      'type' => MENU_CALLBACK,
+      'type' => MENU_NORMAL_ITEM,
     );
   }
 
   $items['user/%user/eautopay'] = array(
-    'title' => 'Поля профиля из E-autopay',
-    'description' => 'Страница созданная модулем e-autopay для дополнительных данных заказа',
+    'title' => 'Данные профился из e-autopay',
+    'description' => 'На этой вкладке отображаются данные, которые ввёл пользователь при оформлении заказа через сервис e-autopay',
     'page callback' => 'user_profile_eautopay_data',
     'page arguments' => array(1),
     'access callback' => TRUE,
@@ -30,23 +43,30 @@ function eautopay_menu (){
   );
 
   $items['admin/config/system/eautopay'] = array(
-    'title' => 'Настройки e-autopay',
-    'description' => 'позволяет здать адрес страницы, куда будут приходить уведомления',
+    'title' => 'Настройка e-autopay',
+    'description' => 'Настранице настроек задаётся секретный ключ и ссылка приёма данных с сервиса',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('eautopay_get_pay_data_form'),
     'access arguments' => array('administer site configuration'),
     'file' => 'eautopay.admin.inc',
     'type' => MENU_NORMAL_ITEM,
+    'weight' => -10,
+  );
+
+  $items['admin/config/system/eautopay/settings'] = array(
+    'title' => 'Настройка e-autopay',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
   );
 
   return $items;
 }
 
-function user_profile_eautopay_data ($account){
+function user_profile_eautopay_data($account) {
 
   $installed_fields = _eautopay_installed_fields();
 
-  foreach($installed_fields as $c_field_name => $c_field_info){
+  foreach ($installed_fields as $c_field_name => $c_field_info) {
     $fields[] = field_view_field('user', $account, $c_field_name, 'full');
   }
 
@@ -63,11 +83,11 @@ function eautopay_user_view_alter(&$build) {
 
 }
 
-function eautopay_form_user_profile_form_alter (&$form){
+function eautopay_form_user_profile_form_alter(&$form) {
 
   $form['eautopay'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Eautopay data'),
+    '#title' => t('Данные профился из e-autopay'),
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
@@ -81,53 +101,45 @@ function eautopay_form_user_profile_form_alter (&$form){
 
 }
 
-function eautopay_get_post () {
+function eautopay_get_order() {
 
   drupal_page_is_cacheable(FALSE);
 
   if(md5($_POST['id'].$_POST['email'].$_POST['phone'].variable_get('eautopay_secret_key')) == $_POST['hash']){
-    file_put_contents('/tmp/e-autopay.txt', serialize($_POST));
 
-    $post_first_name = check_plain(filter_xss($_POST['first_name']));
-    $post_last_name = check_plain(filter_xss($_POST['last_name']));
-    $post_middle_name = check_plain(filter_xss($_POST['middle_name']));
-    $post_email = check_plain(filter_xss($_POST['email']));
-    $post_phone = check_plain(filter_xss($_POST['phone']));
-    $post_phone2 = check_plain(filter_xss($_POST['phone2']));
-    $post_city = check_plain(filter_xss($_POST['city']));
-    $post_country = check_plain(filter_xss($_POST['country']));
-    $post_address = check_plain(filter_xss($_POST['address']));
-    $post_region = check_plain(filter_xss($_POST['region']));
-    $post_postalcode = check_plain(filter_xss($_POST['postalcode']));
+    $epay_data = array();
+
+    foreach ($_POST as $k => $v) {
+      $epay_data[$k] = check_plain(filter_xss($v));
+    }
 
     $epay_role = user_role_load_by_name('e-autopay user');
+
     $epay_role_rid = $epay_role->rid;
 
     $new_eautopay_user = new stdClass();
-    $new_eautopay_user->name = $post_first_name.' '.$post_last_name;
+    $new_eautopay_user->name = $epay_data['first_name'] . ' ' . $epay_data['last_name'];
     $new_eautopay_user->pass = user_hash_password(user_password(10));
-    $new_eautopay_user->mail = $post_email;
-    $new_eautopay_user->init = $post_email;
+    $new_eautopay_user->mail = $epay_data['email'];
+    $new_eautopay_user->init = $epay_data['email'];
     $new_eautopay_user->status = 1;
     $new_eautopay_user->signature_format = 'filtered_html';
-    $new_eautopay_user->roles = array(
-      DRUPAL_AUTHENTICATED_RID => TRUE,
-      $epay_role_rid => TRUE,
-    );
 
-    $new_eautopay_user->field_epay_first_name[LANGUAGE_NONE][0]['value'] = $post_first_name;
-    $new_eautopay_user->field_epay_last_name[LANGUAGE_NONE][0]['value'] = $post_last_name;
-    $new_eautopay_user->field_epay_middle_name[LANGUAGE_NONE][0]['value'] = $post_middle_name;
-    $new_eautopay_user->field_epay_email[LANGUAGE_NONE][0]['value'] = $post_email;
-    $new_eautopay_user->field_epay_phone[LANGUAGE_NONE][0]['value'] = $post_phone;
-    $new_eautopay_user->field_epay_phone2[LANGUAGE_NONE][0]['value'] = $post_phone2;
-    $new_eautopay_user->field_epay_city[LANGUAGE_NONE][0]['value'] = $post_city;
-    $new_eautopay_user->field_epay_country[LANGUAGE_NONE][0]['value'] = $post_country;
-    $new_eautopay_user->field_epay_address[LANGUAGE_NONE][0]['value'] = $post_address;
-    $new_eautopay_user->field_epay_region[LANGUAGE_NONE][0]['value'] = $post_region;
-    $new_eautopay_user->field_epay_postalcode[LANGUAGE_NONE][0]['value'] = $post_postalcode;
+    $new_eautopay_user->roles = array(DRUPAL_AUTHENTICATED_RID => TRUE, $epay_role_rid => TRUE,);
 
-    if($epay_account = user_load_by_mail($new_eautopay_user->mail) or $epay_account = user_load_by_name($new_eautopay_user->name)){
+    $new_eautopay_user->field_epay_first_name[LANGUAGE_NONE][0]['value'] = $epay_data['first_name'];
+    $new_eautopay_user->field_epay_last_name[LANGUAGE_NONE][0]['value'] = $epay_data['last_name'];
+    $new_eautopay_user->field_epay_middle_name[LANGUAGE_NONE][0]['value'] = $epay_data['middle_name'];
+    $new_eautopay_user->field_epay_email[LANGUAGE_NONE][0]['value'] = $epay_data['email'];
+    $new_eautopay_user->field_epay_phone[LANGUAGE_NONE][0]['value'] = $epay_data['phone'];
+    $new_eautopay_user->field_epay_phone2[LANGUAGE_NONE][0]['value'] = $epay_data['phone2'];
+    $new_eautopay_user->field_epay_city[LANGUAGE_NONE][0]['value'] = $epay_data['city'];
+    $new_eautopay_user->field_epay_country[LANGUAGE_NONE][0]['value'] = $epay_data['country'];
+    $new_eautopay_user->field_epay_address[LANGUAGE_NONE][0]['value'] = $epay_data['address'];
+    $new_eautopay_user->field_epay_region[LANGUAGE_NONE][0]['value'] = $epay_data['region'];
+    $new_eautopay_user->field_epay_postalcode[LANGUAGE_NONE][0]['value'] = $epay_data['postalcode'];
+
+    if ($epay_account = user_load_by_mail($new_eautopay_user->mail) or $epay_account = user_load_by_name($new_eautopay_user->name)) {
 
       $installed_fields = _eautopay_installed_fields();
       foreach ($installed_fields as $c_field_name => $c_field_info) {
@@ -136,10 +148,49 @@ function eautopay_get_post () {
       $epay_account->roles = $new_eautopay_user->roles;
       $account = user_save($epay_account);
 
-    }else{
-      $account = user_save($new_eautopay_user);
-      _user_mail_notify('register_no_approval_required', $new_eautopay_user);
     }
+    else {
+      $account = user_save($new_eautopay_user);
+      _user_mail_notify('register_admin_created', $new_eautopay_user);
+    }
+
+    $order = array(
+      'oid' => $epay_data['id'],
+      'uid' => $account->uid,
+      'order_date' => $epay_data['order_date'],
+      'pay_date' => $epay_data['pay_date'],
+      'currency' => $epay_data['currency'],
+      'product_id' => $epay_data['product_id'],
+      'product_name' => $epay_data['product_name'],
+      'product_price' => $epay_data['product_price'],
+      'product_qty' => $epay_data['product_qty'],
+      'comments_client' => $epay_data['comments_client'],
+      'comments_author' => $epay_data['comments_author'],
+      'ip' => $epay_data['ip'],
+      'pay_method' => $epay_data['pay_method'],
+    );
+
+    $is_exist_oid = db_select('epay_orders', 'eo')
+      ->condition('oid', $epay_data['id'])
+      ->fields('eo', array('oid'))
+      ->execute()
+      ->fetchField();
+
+    if (!empty($is_exist_oid)) {
+      exit;
+    }
+    else {
+      drupal_write_record('epay_orders', $order);
+    }
+
     watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
+
+  return 'ok';
+}
+
+function eautopay_user_delete ($account) {
+  db_delete('epay_orders')
+    ->condition('uid', $account->uid)
+    ->execute();
 }

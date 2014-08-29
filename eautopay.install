@@ -137,6 +137,90 @@ function _eautopay_installed_instances (){
   );
 }
 
+function eautopay_schema () {
+  $schema['epay_orders'] = array(
+    'description' => 'Orders from e-autopay',
+    'fields' => array(
+      'oid' => array(
+        'description' => 'Order ID, unique field',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'description' => 'drupal users.uid',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'order_date' => array(
+        'description' => 'Order date',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'pay_date' => array(
+        'description' => 'Pay date',
+        'type' => 'int',
+        'not null' => FALSE,
+      ),
+      'currency' => array(
+        'description' => 'Currency',
+        'type' => 'varchar',
+        'length' => '3',
+        'not null' => TRUE,
+      ),
+      'product_id' => array(
+        'description' => 'Product ID',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'product_name' => array(
+        'description' => 'Product name',
+        'type' => 'varchar',
+        'length' => '255',
+        'not null' => TRUE,
+      ),
+      'product_price' => array(
+        'description' => 'Price',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'product_qty' => array(
+        'description' => 'Product quantity',
+        'type' => 'int',
+        'not null' => TRUE,
+      ),
+      'comments_client' => array(
+        'description' => 'Client comments',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'comments_author' => array(
+        'description' => 'Author comments',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'ip' => array(
+        'description' => 'Client IP',
+        'type' => 'varchar',
+        'length' => '128',
+        'not null' => TRUE,
+      ),
+      'pay_method' => array(
+        'description' => 'Pay method',
+        'type' => 'varchar',
+        'length' => '20',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('oid'),
+  );
+
+  return $schema;
+}
+
 function eautopay_uninstall(){
 
   foreach(array_keys(_eautopay_installed_fields()) as $field){
