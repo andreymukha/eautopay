@@ -1,5 +1,7 @@
 <?php
 
+//TODO: Сделать очистку кэша после инициализации модуля. Не появляются страницы из Views.
+
 require_once('eautopay.inc');
 //require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
 
@@ -123,7 +125,7 @@ function eautopay_get_order() {
       $epay_data[$k] = check_plain(filter_xss($v));
     }
 
-    file_put_contents('Z:\userdata\temp\e-autopay.txt', serialize($epay_data));
+    file_put_contents('tmp/e-autopay.txt', serialize($epay_data));
 
     $epay_role = user_role_load_by_name('e-autopay user');
 
@@ -199,7 +201,7 @@ function eautopay_get_order() {
     watchdog('epay order', 'You have new order from user <b>%acc_name</b>', array('%acc_name' => $account->name), WATCHDOG_INFO);
   }
 
-  $result = unserialize(file_get_contents('Z:\userdata\temp\e-autopay.txt'));
+  $result = unserialize(file_get_contents('tmp/e-autopay.txt'));
 
   debug($result);
 
